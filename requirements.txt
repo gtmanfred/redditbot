@@ -1,0 +1,6 @@
+praw
+celery[redis]
+asyncio
+git+git://github.com/watchtower/asyncirc@master
+pbr
+pyyaml

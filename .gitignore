@@ -1,0 +1,9 @@
+AUTHORS
+ChangeLog
+.python-version
+src
+build
+*.egg-info
+dist
+__pycache__
+*.swp

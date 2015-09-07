@@ -1,0 +1,9 @@
+server: chat.freenode.net
+port: 6697
+botnick: <botname>
+username: <sasl username>
+password: <sasl password>
+sasl: True
+subreddits:
+  funny:
+    - '#peopletoannoy'

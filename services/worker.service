@@ -1,0 +1,9 @@
+[Unit]
+Description=Worker for redditbot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -m redditbot --worker -l debug -w 5
+
+[Install]
+WantedBy=multi-user.target
