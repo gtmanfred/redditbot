@@ -61,7 +61,9 @@ class UpdateSubreddit(dict):
     @property
     def place_holder(self):
         if self.get('place_holder', None) is None:
-            self['place_holder'] = self.rconn.get('place_holder:{0}'.format(self.subreddit.display_name))
+            self['place_holder'] = self.rconn.get(
+                'place_holder:{0}'.format(self.subreddit.display_name)
+            )
             if isinstance(self['place_holder'], bytes):
                 self['place_holder'] = self['place_holder'].decode('utf-8')
         return self['place_holder']
@@ -69,20 +71,30 @@ class UpdateSubreddit(dict):
     @place_holder.setter
     def place_holder(self, value):
         if value == self['place_holder']:
-            log.debug('place_holder:{0} already set'.format(self.subreddit.display_name, value))
+            log.debug('place_holder:{0} already set'.format(
+                self.subreddit.display_name, value
+            ))
             return
-        log.debug('Setting place_holder:{0} {1}'.format(self.subreddit.display_name, value))
+        log.debug('Setting place_holder:{0} {1}'.format(
+            self.subreddit.display_name, value
+        ))
         self['place_holder'] = value
-        self.rconn.set('place_holder:{0}'.format(self.subreddit.display_name), value)
+        self.rconn.set(
+            'place_holder:{0}'.format(self.subreddit.display_name), value
+        )
 
     @property
     def recent_posts(self):
         if not self['recent_posts']:
-            self['recent_posts'] = self.rconn.lrange('recent_posts:{0}'.format(self.subreddit.display_name), 0, -1)
+            self['recent_posts'] = self.rconn.lrange(
+                'recent_posts:{0}'.format(self.subreddit.display_name), 0, -1
+            )
             if isinstance(self['recent_posts'], list):
-                self['recent_posts'] = list(map(lambda x: x.decode('utf-8'), self['recent_posts']))
+                self['recent_posts'] = list(
+                    map(lambda x: x.decode('utf-8'), self['recent_posts'])
+                )
         return self['recent_posts']
-        
+
     @recent_posts.setter
     def recent_posts(self, value):
         if not value:
@@ -90,8 +102,12 @@ class UpdateSubreddit(dict):
         self['recent_posts'].extend(value)
         if len(self['recent_posts']) > 25:
             self['recent_posts'] = self['recent_posts'][-25:]
-        self.rconn.lpush('recent_posts:{0}'.format(self.subreddit.display_name), *value)
-        self.rconn.ltrim('recent_posts:{0}'.format(self.subreddit.display_name), 0, 24)
+        self.rconn.lpush(
+            'recent_posts:{0}'.format(self.subreddit.display_name), *value
+        )
+        self.rconn.ltrim(
+            'recent_posts:{0}'.format(self.subreddit.display_name), 0, 24
+        )
 
     def send_as_task(self, post):
         payload = {'post': post}
@@ -112,7 +128,10 @@ class UpdateSubreddit(dict):
                 first_post = post.id
             if post.id == self.place_holder or post.id in self.recent_posts:
                 continue
-            log.debug('New post for {0}: {1}'.format(self.subreddit.display_name, post.id))
+            log.debug(
+                'New post for %s: %s',
+                self.subreddit.display_name, post.id
+            )
             recent_posts.append(post.id)
             self.send_as_task(post)
         self.recent_posts = recent_posts

@@ -1,9 +1,7 @@
 import argparse
-import logging
 import asyncio
 import yaml
 
-from concurrent.futures import ProcessPoolExecutor
 from kombu.utils.debug import setup_logging
 
 import redditbot
@@ -45,10 +43,10 @@ if args.client is True:
         tasks.append(UpdateSubreddit(subreddit, args.interval))
 
 if args.worker is True:
-    from redditbot import bot
+    from redditbot import bot  # noqa
     from redditbot import worker
     connection = 'redis://localhost:6379/'
     for w in [worker.Worker(connection, redditbot.config).run] * args.workers:
-        tasks.append(asyncio.async(loop.run_in_executor(None, w)))
+        tasks.append(asyncio.ensure_future(loop.run_in_executor(None, w)))
 
 loop.run_forever()
